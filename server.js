@@ -20,6 +20,12 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes); // ✅ kategori rotası eklendi
 
+
+// ⬇️ Test endpoint
+app.get('/api/test', (req, res) => {
+  res.send('API çalışıyor 🎉');
+});
+
 // Merkezi hata yakalayıcı middleware
 app.use(errorHandler);
 
