@@ -10,7 +10,8 @@ const jwt = require('jsonwebtoken'); // <<< EKLENDİ - jwt import edildi
 // Tüm kuponları getir (Admin/Satıcı için tüm kuponları döndürebiliriz)
 router.get('/', async (req, res) => {
   try {
-    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    // coupons endpoint'inde category populate edildi // ✅ category bilgisi eklendi
+    const coupons = await Coupon.find().populate('category').sort({ createdAt: -1 });
     res.json(coupons);
   } catch (error) {
     res.status(500).json({ message: 'Kuponlar alınamadı' });
@@ -82,12 +83,12 @@ router.get('/my', async (req, res) => {
   }
 });
 
-
 // Admin yeni kupon oluşturur
 router.post('/create', verifyAdmin, async (req, res) => {
   try {
-    const { title, description, discount, discountType, price } = req.body; // 🔥 discountType eklendi
-    const coupon = new Coupon({ title, description, discount, discountType, price });
+    // category bilgisi eklendi // ✅ category req.body'den alınıyor
+    const { title, description, discount, discountType, price, category } = req.body; 
+    const coupon = new Coupon({ title, description, discount, discountType, price, category }); // ✅ category dahil edildi
     await coupon.save();
     res.status(201).json({ message: 'Kupon oluşturuldu', coupon });
   } catch (error) {
@@ -191,6 +192,17 @@ router.get('/used-by-seller', verifySeller, async (req, res) => {
   } catch (err) {
     console.error('Satıcının kuponları alınamadı:', err);
     res.status(500).json({ message: 'Kuponlar alınamadı' });
+  }
+});
+
+// Yeni endpoint: ID ile kupon detayı, category ile birlikte dönüyor // ✅ eklendi
+router.get('/:id', async (req, res) => {
+  try {
+    const coupon = await Coupon.findById(req.params.id).populate('category');
+    if (!coupon) return res.status(404).json({ message: 'Kupon bulunamadı' });
+    res.json(coupon);
+  } catch (error) {
+    res.status(500).json({ message: 'Kupon alınamadı' });
   }
 });
 

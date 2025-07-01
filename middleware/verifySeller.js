@@ -1,3 +1,4 @@
+//verifySeller.js
 const jwt = require('jsonwebtoken');
 
 const verifySeller = (req, res, next) => {

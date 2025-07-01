@@ -1,4 +1,4 @@
-// ✅ Güncellenmiş User.js (şifre sıfırlama token alanları eklendi)
+// User.js 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); 
 const crypto = require('crypto');
