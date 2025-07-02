@@ -10,7 +10,6 @@ const jwt = require('jsonwebtoken'); // <<< EKLENDİ - jwt import edildi
 // Tüm kuponları getir (Admin/Satıcı için tüm kuponları döndürebiliriz)
 router.get('/', async (req, res) => {
   try {
-    // coupons endpoint'inde category populate edildi // ✅ category bilgisi eklendi
     const coupons = await Coupon.find().populate('category').sort({ createdAt: -1 });
     res.json(coupons);
   } catch (error) {
@@ -86,9 +85,8 @@ router.get('/my', async (req, res) => {
 // Admin yeni kupon oluşturur
 router.post('/create', verifyAdmin, async (req, res) => {
   try {
-    // category bilgisi eklendi // ✅ category req.body'den alınıyor
-    const { title, description, discount, discountType, price, category } = req.body; 
-    const coupon = new Coupon({ title, description, discount, discountType, price, category }); // ✅ category dahil edildi
+    const { title, description, discount, discountType, price, category, expiresAt } = req.body;
+    const coupon = new Coupon({ title, description, discount, discountType, price, category, expiresAt });
     await coupon.save();
     res.status(201).json({ message: 'Kupon oluşturuldu', coupon });
   } catch (error) {
@@ -112,7 +110,7 @@ router.post('/buy/:id', verifyCustomer, async (req, res) => {
     coupon.isUsed = true;
     coupon.buyerEmail = email;
     coupon.usedAt = null;
-    coupon.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    // coupon.expiresAt güncellemesi kaldırıldı
     await coupon.save();
 
     await sendEmail(email, 'Kupon Kodunuz', `Təbriklər! Kupon kodunuz: ${uniqueCode}`);
@@ -141,7 +139,7 @@ router.post('/public-buy/:id', async (req, res) => {
     coupon.isUsed = true;
     coupon.buyerEmail = email;
     coupon.usedAt = null;
-    coupon.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    // coupon.expiresAt güncellemesi kaldırıldı
     await coupon.save();
 
     await sendEmail(email, 'Kupon Kodunuz', `Təbriklər! Kupon kodunuz: ${uniqueCode}`);
